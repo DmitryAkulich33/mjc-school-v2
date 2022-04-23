@@ -1,6 +1,7 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.domain.Tag;
+import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.exception.TagDaoException;
 import com.epam.esm.exception.TagDuplicateException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +22,15 @@ import java.util.Optional;
 
 @Repository
 public class TagDaoImpl implements TagDao {
-    private static final String FIND_ALL_TAGS = "SELECT id, name, state FROM tag;";
-    private static final String FIND_TAG_BY_ID = "SELECT id, name, state FROM tag WHERE id=?;";
+    private static final String FIND_ALL_TAGS = "SELECT id, name, state FROM tag";
+    private static final String FIND_TAG_BY_ID = "SELECT id, name, state FROM tag WHERE id=?";
+    private static final String FIND_TAG_BY_NAME = "SELECT id, name, state FROM tag WHERE name=?";
     private static final String ADD_TAG = "INSERT INTO tag (name) VALUES(?)";
     private static final String DELETE_TAG_BY_ID = "UPDATE tag SET state=1 WHERE id=?";
     private static final String FIND_TAGS_FROM_CERTIFICATE = "SELECT id, name, state FROM tag " +
             "JOIN tag_certificate ON tag.id=tag_certificate.tag_id WHERE certificate_id=? and tag.state=0";
     private static final Integer DEFAULT_STATE = 0;
+    private static final String ADD_TAG_CERTIFICATE = "INSERT INTO tag_certificate (tag_id, certificate_id) VALUES(?,?)";
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Tag> rowMapper;
 
@@ -45,6 +48,15 @@ public class TagDaoImpl implements TagDao {
     public Optional<Tag> getTagById(Long id) {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_TAG_BY_ID, rowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Tag> getTagByName(String name) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_TAG_BY_NAME, rowMapper, name));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -85,6 +97,15 @@ public class TagDaoImpl implements TagDao {
     public List<Tag> getTagsFromCertificate(Long id) {
         try {
             return jdbcTemplate.query(FIND_TAGS_FROM_CERTIFICATE, rowMapper, id);
+        } catch (DataAccessException e) {
+            throw new TagDaoException("Server problems");
+        }
+    }
+
+    @Override
+    public void createTagCertificate(Long tagId, Long certificateId) {
+        try {
+            jdbcTemplate.update(ADD_TAG_CERTIFICATE, tagId, certificateId);
         } catch (DataAccessException e) {
             throw new TagDaoException("Server problems");
         }

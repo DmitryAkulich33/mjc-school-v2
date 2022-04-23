@@ -12,9 +12,13 @@ import com.epam.esm.service.mapper.CertificateDtoMapper;
 import com.epam.esm.service.mapper.TagDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
@@ -54,7 +58,22 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public Certificate createCertificate(Certificate certificate) {
-        return null;
+    @Transactional
+    public CertificateDto createCertificate(Certificate certificate) {
+        Certificate createdCertificate = certificateDao.createCertificate(certificate);
+        Set<Tag> uniqueTags = new HashSet<>(certificate.getTags());
+        Long id = createdCertificate.getId();
+        List<Tag> certificateTags = getOrSaveTags(uniqueTags);
+        certificateTags.forEach(elem -> tagDao.createTagCertificate(elem.getId(), id));
+        certificate.setTags(certificateTags);
+
+        return certificateMapper.toCertificateDto(certificate);
     }
+
+    private List<Tag> getOrSaveTags(Set<Tag> tags) {
+        return tags.stream().
+                map(elem -> tagDao.getTagByName(elem.getName()).orElseGet(() -> tagDao.createTag(elem)))
+                .collect(Collectors.toList());
+    }
+
 }

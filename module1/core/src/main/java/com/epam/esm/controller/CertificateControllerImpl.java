@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.domain.Certificate;
 import com.epam.esm.model.dto.CertificateDto;
 import com.epam.esm.service.CertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,13 @@ public class CertificateControllerImpl implements CertificateController {
     }
 
     @Override
-    public ResponseEntity<CertificateDto> deleteTag(Long id) {
+    public ResponseEntity<CertificateDto> deleteCertificate(Long id) {
         certificateService.deleteCertificate(id);
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<CertificateDto> createCertificate(Certificate certificate) {
+        return ResponseEntity.ok(certificateService.createCertificate(certificate));
     }
 }

@@ -9,5 +9,5 @@ public interface CertificateService {
     List<CertificateDto> getAllCertificates();
     CertificateDto getCertificateById(Long id);
     void deleteCertificate(Long id);
-    Certificate createCertificate(Certificate certificate);
+    CertificateDto createCertificate(Certificate certificate);
 }
