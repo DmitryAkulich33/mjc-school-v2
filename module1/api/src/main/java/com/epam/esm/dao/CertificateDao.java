@@ -13,4 +13,6 @@ public interface CertificateDao {
     void deleteCertificate(Long id);
 
     Certificate createCertificate(Certificate certificate);
+
+    Certificate updateCertificate(Certificate certificate);
 }

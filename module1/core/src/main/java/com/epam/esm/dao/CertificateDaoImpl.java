@@ -34,6 +34,8 @@ public class CertificateDaoImpl implements CertificateDao {
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Certificate> rowMapper;
     private static final Integer STATE = 0;
+    private static final String UPDATE_CERTIFICATE = "UPDATE certificate SET name=?, description=?, " +
+            "price=?, update_date=?, duration=? WHERE id=?";
 
     @Autowired
     public CertificateDaoImpl(JdbcTemplate jdbcTemplate, RowMapper<Certificate> rowMapper) {
@@ -87,10 +89,29 @@ public class CertificateDaoImpl implements CertificateDao {
             throw new CertificateDaoException("Server problems");
         }
 
-        Long idTag = Objects.requireNonNull(keyHolder.getKey()).longValue();
-        certificate.setId(idTag);
+        Long tagId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+        certificate.setId(tagId);
         certificate.setState(STATE);
         certificate.setCreationDate(creationDate);
+
+        return certificate;
+    }
+
+    @Override
+    public Certificate updateCertificate(Certificate certificate) {
+        Long id = certificate.getId();
+        String name = certificate.getName();
+        String description = certificate.getDescription();
+        double price = certificate.getPrice();
+        LocalDateTime updateDate = LocalDateTime.now();
+        int duration = certificate.getDuration();
+        try {
+            jdbcTemplate.update(UPDATE_CERTIFICATE, name, description, price, updateDate, duration, id);
+        } catch (DataAccessException e) {
+            throw new CertificateDaoException("Server problems");
+        }
+        certificate.setLastUpdateDate(updateDate);
+
         return certificate;
     }
 }

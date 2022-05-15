@@ -36,4 +36,9 @@ public class CertificateControllerImpl implements CertificateController {
     public ResponseEntity<CertificateDto> createCertificate(Certificate certificate) {
         return ResponseEntity.ok(certificateService.createCertificate(certificate));
     }
+
+    @Override
+    public ResponseEntity<CertificateDto> updateCertificate(Certificate certificate, Long id) {
+        return ResponseEntity.ok(certificateService.updateCertificate(certificate, id));
+    }
 }

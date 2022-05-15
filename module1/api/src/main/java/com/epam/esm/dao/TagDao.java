@@ -13,4 +13,5 @@ public interface TagDao {
     void deleteTag(Long id);
     List<Tag> getTagsFromCertificate(Long id);
     void createTagCertificate(Long tagId, Long certificateId);
+    void deleteTagCertificate(Long tagId, Long certificateId);
 }

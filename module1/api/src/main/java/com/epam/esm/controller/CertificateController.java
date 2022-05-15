@@ -20,4 +20,7 @@ public interface CertificateController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<CertificateDto> createCertificate(@RequestBody Certificate certificate);
+
+    @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<CertificateDto> updateCertificate(@RequestBody Certificate certificate, @PathVariable Long id);
 }

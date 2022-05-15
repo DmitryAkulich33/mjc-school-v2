@@ -31,6 +31,7 @@ public class TagDaoImpl implements TagDao {
             "JOIN tag_certificate ON tag.id=tag_certificate.tag_id WHERE certificate_id=? and tag.state=0";
     private static final Integer DEFAULT_STATE = 0;
     private static final String ADD_TAG_CERTIFICATE = "INSERT INTO tag_certificate (tag_id, certificate_id) VALUES(?,?)";
+    private static final String DELETE_TAG_CERTIFICATE = "DELETE FROM tag_certificate WHERE tag_id=? AND certificate_id=?;";
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Tag> rowMapper;
 
@@ -106,6 +107,15 @@ public class TagDaoImpl implements TagDao {
     public void createTagCertificate(Long tagId, Long certificateId) {
         try {
             jdbcTemplate.update(ADD_TAG_CERTIFICATE, tagId, certificateId);
+        } catch (DataAccessException e) {
+            throw new TagDaoException("Server problems");
+        }
+    }
+
+    @Override
+    public void deleteTagCertificate(Long tagId, Long certificateId) {
+        try {
+            jdbcTemplate.update(DELETE_TAG_CERTIFICATE, tagId, certificateId);
         } catch (DataAccessException e) {
             throw new TagDaoException("Server problems");
         }
