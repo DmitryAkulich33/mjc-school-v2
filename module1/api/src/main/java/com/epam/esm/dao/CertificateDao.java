@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CertificateDao {
-    List<Certificate> getAllCertificates();
 
     Optional<Certificate> getCertificateById(Long id);
 
@@ -15,4 +14,6 @@ public interface CertificateDao {
     Certificate createCertificate(Certificate certificate);
 
     Certificate updateCertificate(Certificate certificate);
+
+    List<Certificate> getCertificates(String name, String search, String sort);
 }

@@ -22,7 +22,7 @@ public class Certificate {
     private Integer duration;
     private List<Tag> tags;
 
-    public static CertificateBuilder builder () {
+    public static CertificateBuilder builder() {
         return new CertificateBuilder();
     }
 
@@ -98,6 +98,7 @@ public class Certificate {
                     this.state,
                     this.duration,
                     this.tags
-            );}
+            );
+        }
     }
 }

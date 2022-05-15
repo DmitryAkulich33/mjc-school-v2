@@ -9,7 +9,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class CertificateQueryBuilder {
     private static final String FIND_TAG_BY_NAME = " JOIN tag_certificate ON certificate.id=tag_certificate.certificate_id " +
             "JOIN tag ON tag_certificate.tag_id=tag.id WHERE tag.";
-    private static final String FIELD_NAME_TAG = "tag=";
+    private static final String FIELD_NAME_TAG = "name=";
     private static final String AND = " AND ";
     private static final String TAG_UNLOCK = "tag.state=0";
     private static final String WHERE = " WHERE ";
@@ -45,23 +45,23 @@ public class CertificateQueryBuilder {
         return tagNameQuery;
     }
 
-    public StringBuilder buildSearchQuery(String search) {
+    public StringBuilder buildSearchQuery(String query) {
         StringBuilder searchQuery = new StringBuilder();
 
-        if (isNotBlank(search)) {
+        if (isNotBlank(query)) {
 
             searchQuery.append(BRACKET_LEFT)
                     .append(CERTIFICATE)
                     .append(NAME_CERTIFICATE)
                     .append(LIKE)
-                    .append(search)
+                    .append(query)
                     .append(PERCENT_SIGN)
                     .append(SINGLE_QUOTE)
                     .append(OR)
                     .append(CERTIFICATE)
                     .append(DESCRIPTION)
                     .append(LIKE)
-                    .append(search)
+                    .append(query)
                     .append(PERCENT_SIGN)
                     .append(SINGLE_QUOTE)
                     .append(BRACKET_RIGHT)

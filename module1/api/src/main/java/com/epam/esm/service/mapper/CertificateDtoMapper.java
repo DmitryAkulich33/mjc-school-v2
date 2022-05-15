@@ -8,6 +8,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses = TagDtoMapper.class)
 public interface CertificateDtoMapper {
-    List<CertificateDto> toCertificateDtoList (List<Certificate> certificates);
-    CertificateDto toCertificateDto (Certificate certificate);
+    List<CertificateDto> toCertificateDtoList(List<Certificate> certificates);
+
+    CertificateDto toCertificateDto(Certificate certificate);
 }

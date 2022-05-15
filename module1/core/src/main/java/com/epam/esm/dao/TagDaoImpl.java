@@ -1,7 +1,6 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.domain.Tag;
-import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.exception.TagDaoException;
 import com.epam.esm.exception.TagDuplicateException;
 import org.springframework.beans.factory.annotation.Autowired;

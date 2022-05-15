@@ -5,11 +5,8 @@ import com.epam.esm.dao.TagDao;
 import com.epam.esm.domain.Certificate;
 import com.epam.esm.domain.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
-import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.model.dto.CertificateDto;
-import com.epam.esm.model.dto.TagDto;
 import com.epam.esm.service.mapper.CertificateDtoMapper;
-import com.epam.esm.service.mapper.TagDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,31 +21,32 @@ import java.util.stream.Collectors;
 public class CertificateServiceImpl implements CertificateService {
     private final CertificateDao certificateDao;
     private final TagDao tagDao;
-    private final CertificateDtoMapper certificateMapper;
-    private final TagDtoMapper tagDtoMapper;
+    private final CertificateDtoMapper certificateDtoMapper;
 
     @Autowired
-    public CertificateServiceImpl(CertificateDao certificateDao, TagDao tagDao, CertificateDtoMapper certificateMapper,
-                                  TagDtoMapper tagDtoMapper) {
+    public CertificateServiceImpl(CertificateDao certificateDao, TagDao tagDao, CertificateDtoMapper certificateDtoMapper) {
         this.certificateDao = certificateDao;
         this.tagDao = tagDao;
-        this.certificateMapper = certificateMapper;
-        this.tagDtoMapper = tagDtoMapper;
+        this.certificateDtoMapper = certificateDtoMapper;
     }
 
     @Override
-    public List<CertificateDto> getAllCertificates() {
-        return null;
+    @Transactional(readOnly = true)
+    public List<CertificateDto> getAllCertificates(String name, String searchQuery, String sort) {
+        List<Certificate> certificates = certificateDao.getCertificates(name, searchQuery, sort);
+        certificates.forEach(certificate -> certificate.setTags(tagDao.getTagsFromCertificate(certificate.getId())));
+        return certificateDtoMapper.toCertificateDtoList(certificates);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CertificateDto getCertificateById(Long id) {
         Optional<Certificate> optionalCertificate = certificateDao.getCertificateById(id);
-        CertificateDto certificateDto = certificateMapper.toCertificateDto(optionalCertificate.orElseThrow(() ->
-                new CertificateNotFoundException("Certificate with id " + id + " isn't found")));
-        List<TagDto> tagsDto = tagDtoMapper.toTagDtoList(tagDao.getTagsFromCertificate(id));
-        certificateDto.setTags(tagsDto);
-        return certificateDto;
+        Certificate certificate = optionalCertificate.orElseThrow(() ->
+                new CertificateNotFoundException("Certificate with id " + id + " isn't found"));
+        certificate.setTags(tagDao.getTagsFromCertificate(id));
+
+        return certificateDtoMapper.toCertificateDto(certificate);
     }
 
     @Override
@@ -67,7 +65,7 @@ public class CertificateServiceImpl implements CertificateService {
         certificateTags.forEach(elem -> tagDao.createTagCertificate(elem.getId(), id));
         certificate.setTags(certificateTags);
 
-        return certificateMapper.toCertificateDto(certificate);
+        return certificateDtoMapper.toCertificateDto(certificate);
     }
 
     @Override
@@ -84,7 +82,7 @@ public class CertificateServiceImpl implements CertificateService {
         certificateToUpdate.setTags(composeCertificateTags(certificate, id));
         certificateDao.updateCertificate(certificateToUpdate);
 
-        return certificateMapper.toCertificateDto(certificateToUpdate);
+        return certificateDtoMapper.toCertificateDto(certificateToUpdate);
     }
 
     private String composeCertificateName(Certificate certificate, Certificate certificateToUpdate) {
@@ -110,7 +108,7 @@ public class CertificateServiceImpl implements CertificateService {
     private List<Tag> composeCertificateTags(Certificate certificate, Long certificateId) {
         List<Tag> tagsToUpdate = certificate.getTags();
         List<Tag> certificateTags = tagDao.getTagsFromCertificate(certificateId);
-        if(tagsToUpdate != null && !tagsToUpdate.isEmpty()) {
+        if (tagsToUpdate != null && !tagsToUpdate.isEmpty()) {
 
             Set<Tag> uniqueTags = new HashSet<>(tagsToUpdate);
             List<Tag> uniqueTagsToUpdate = getOrSaveTags(uniqueTags);
@@ -122,11 +120,11 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateTags;
     }
 
-    private void saveNewTagsInCertificate (List<Tag> uniqueTagsToUpdate, List<Tag> certificateTags, Long certificateId) {
+    private void saveNewTagsInCertificate(List<Tag> uniqueTagsToUpdate, List<Tag> certificateTags, Long certificateId) {
         getNewTagsForCertificate(uniqueTagsToUpdate, certificateTags).forEach(elem -> tagDao.createTagCertificate(elem.getId(), certificateId));
     }
 
-    private List<Tag> getNewTagsForCertificate (List<Tag> uniqueTagsToUpdate, List<Tag> certificateTags) {
+    private List<Tag> getNewTagsForCertificate(List<Tag> uniqueTagsToUpdate, List<Tag> certificateTags) {
         return uniqueTagsToUpdate.stream()
                 .filter(elem -> !isTagBelongToCertificate(certificateTags, elem.getId()))
                 .collect(Collectors.toList());

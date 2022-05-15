@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class CertificateControllerImpl implements CertificateController {
     private final CertificateService certificateService;
@@ -17,8 +19,8 @@ public class CertificateControllerImpl implements CertificateController {
     }
 
     @Override
-    public ResponseEntity<CertificateDto> getAllCertificates() {
-        return null;
+    public ResponseEntity<List<CertificateDto>> getAllCertificates(String tagName, String searchQuery, String sort) {
+        return ResponseEntity.ok(certificateService.getAllCertificates(tagName, searchQuery, sort));
     }
 
     @Override

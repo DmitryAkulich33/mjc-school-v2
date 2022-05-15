@@ -1,9 +1,9 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.dao.builder.CertificateQueryBuilder;
 import com.epam.esm.domain.Certificate;
 import com.epam.esm.exception.CertificateDaoException;
 import com.epam.esm.exception.CertificateDuplicateException;
-import com.epam.esm.exception.TagDaoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
@@ -26,26 +26,24 @@ import java.util.Optional;
 public class CertificateDaoImpl implements CertificateDao {
     private static final String ADD_CERTIFICATE = "INSERT INTO certificate (name, description, price, " +
             "creation_date, state, duration) VALUES(?,?,?,?,?,?)";
-    private static final String FIND_DISTINCT_FROM_CERTIFICATES = "SELECT DISTINCT id, name, description, price, " +
-            "creation_date, update_date, state, duration FROM certificate";
+    private static final String FIND_DISTINCT_FROM_CERTIFICATES = "SELECT DISTINCT certificate.id, certificate.name, description, " +
+            "price, creation_date, update_date, certificate.state, duration FROM certificate";
     private static final String FIND_CERTIFICATE_BY_ID = "SELECT id, name, description, price, creation_date, " +
             "update_date, state, duration FROM certificate WHERE id=? AND state=0";
     private static final String DELETE_CERTIFICATE_BY_ID = "UPDATE certificate SET state=1 WHERE id=?";
-    private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Certificate> rowMapper;
     private static final Integer STATE = 0;
     private static final String UPDATE_CERTIFICATE = "UPDATE certificate SET name=?, description=?, " +
             "price=?, update_date=?, duration=? WHERE id=?";
+    private static final String CERTIFICATE_UNLOCK = " certificate.state=0";
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<Certificate> rowMapper;
+    private final CertificateQueryBuilder certificateQueryBuilder;
 
     @Autowired
-    public CertificateDaoImpl(JdbcTemplate jdbcTemplate, RowMapper<Certificate> rowMapper) {
+    public CertificateDaoImpl(JdbcTemplate jdbcTemplate, RowMapper<Certificate> rowMapper, CertificateQueryBuilder certificateQueryBuilder) {
         this.jdbcTemplate = jdbcTemplate;
         this.rowMapper = rowMapper;
-    }
-
-    @Override
-    public List<Certificate> getAllCertificates() {
-        return null;
+        this.certificateQueryBuilder = certificateQueryBuilder;
     }
 
     @Override
@@ -113,5 +111,19 @@ public class CertificateDaoImpl implements CertificateDao {
         certificate.setLastUpdateDate(updateDate);
 
         return certificate;
+    }
+
+    @Override
+    public List<Certificate> getCertificates(String tagName, String searchQuery, String sort) {
+        StringBuilder certificateQuery = new StringBuilder(FIND_DISTINCT_FROM_CERTIFICATES)
+                .append(certificateQueryBuilder.buildTagNameQuery(tagName))
+                .append(certificateQueryBuilder.buildSearchQuery(searchQuery))
+                .append(CERTIFICATE_UNLOCK)
+                .append(certificateQueryBuilder.buildSortQuery(sort));
+        try {
+            return jdbcTemplate.query(certificateQuery.toString(), rowMapper);
+        } catch (DataAccessException e) {
+            throw new CertificateDaoException("Server problems");
+        }
     }
 }

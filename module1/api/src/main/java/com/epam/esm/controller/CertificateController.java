@@ -6,11 +6,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequestMapping(value = "/certificates")
 public interface CertificateController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<CertificateDto> getAllCertificates();
+    ResponseEntity<List<CertificateDto>> getAllCertificates(@RequestParam(required = false) String tagName,
+                                                            @RequestParam(required = false) String searchQuery,
+                                                            @RequestParam(required = false) String sort);
 
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<CertificateDto> getCertificateById(@PathVariable Long id);

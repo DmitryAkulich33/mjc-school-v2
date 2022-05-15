@@ -2,8 +2,8 @@ package com.epam.esm.service;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.domain.Tag;
-import com.epam.esm.model.dto.TagDto;
 import com.epam.esm.exception.TagNotFoundException;
+import com.epam.esm.model.dto.TagDto;
 import com.epam.esm.service.mapper.TagDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
