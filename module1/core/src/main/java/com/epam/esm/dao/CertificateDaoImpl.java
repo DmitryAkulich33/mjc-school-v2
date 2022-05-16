@@ -14,6 +14,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -25,7 +26,7 @@ import java.util.Optional;
 @Repository
 public class CertificateDaoImpl implements CertificateDao {
     private static final String ADD_CERTIFICATE = "INSERT INTO certificate (name, description, price, " +
-            "creation_date, state, duration) VALUES(?,?,?,?,?,?)";
+            "creation_date, update_date, state, duration) VALUES(?,?,?,?,?,?,?)";
     private static final String FIND_DISTINCT_FROM_CERTIFICATES = "SELECT DISTINCT certificate.id, certificate.name, description, " +
             "price, creation_date, update_date, certificate.state, duration FROM certificate";
     private static final String FIND_CERTIFICATE_BY_ID = "SELECT id, name, description, price, creation_date, " +
@@ -77,8 +78,9 @@ public class CertificateDaoImpl implements CertificateDao {
                 ps.setString(2, certificate.getDescription());
                 ps.setDouble(3, certificate.getPrice());
                 ps.setTimestamp(4, Timestamp.valueOf(creationDate));
-                ps.setInt(5, STATE);
-                ps.setInt(6, certificate.getDuration());
+                ps.setTimestamp(5, Timestamp.valueOf(creationDate));
+                ps.setInt(6, STATE);
+                ps.setInt(7, certificate.getDuration());
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {

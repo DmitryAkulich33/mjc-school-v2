@@ -12,7 +12,7 @@ create table tag
 create table certificate
 (
     id BIGINT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL UNIQUE,
     description VARCHAR(300) NOT NULL,
     price DOUBLE NOT NULL,
     creation_date DATETIME NOT NULL,
