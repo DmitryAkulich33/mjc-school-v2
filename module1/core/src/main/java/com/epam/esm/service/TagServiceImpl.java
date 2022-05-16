@@ -7,6 +7,7 @@ import com.epam.esm.model.dto.TagDto;
 import com.epam.esm.service.mapper.TagDtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transactional
     public TagDto createTag(Tag tag) {
         return mapper.toTagDto(tagDao.createTag(tag));
     }

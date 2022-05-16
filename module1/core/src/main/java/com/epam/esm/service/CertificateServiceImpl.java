@@ -50,6 +50,7 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
+    @Transactional
     public void deleteCertificate(Long id) {
         getCertificateById(id);
         certificateDao.deleteCertificate(id);
@@ -109,7 +110,6 @@ public class CertificateServiceImpl implements CertificateService {
         List<Tag> tagsToUpdate = certificate.getTags();
         List<Tag> certificateTags = tagDao.getTagsFromCertificate(certificateId);
         if (tagsToUpdate != null && !tagsToUpdate.isEmpty()) {
-
             Set<Tag> uniqueTags = new HashSet<>(tagsToUpdate);
             List<Tag> uniqueTagsToUpdate = getOrSaveTags(uniqueTags);
             saveNewTagsInCertificate(uniqueTagsToUpdate, certificateTags, certificateId);
@@ -117,6 +117,7 @@ public class CertificateServiceImpl implements CertificateService {
 
             return uniqueTagsToUpdate;
         }
+
         return certificateTags;
     }
 
