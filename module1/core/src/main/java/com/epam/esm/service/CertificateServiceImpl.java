@@ -7,6 +7,8 @@ import com.epam.esm.domain.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.model.dto.CertificateDto;
 import com.epam.esm.service.mapper.CertificateDtoMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ public class CertificateServiceImpl implements CertificateService {
     private final CertificateDao certificateDao;
     private final TagDao tagDao;
     private final CertificateDtoMapper certificateDtoMapper;
+    private static Logger log = LogManager.getLogger(CertificateServiceImpl.class);
 
     @Autowired
     public CertificateServiceImpl(CertificateDao certificateDao, TagDao tagDao, CertificateDtoMapper certificateDtoMapper) {
@@ -32,8 +35,9 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CertificateDto> getAllCertificates(String name, String searchQuery, String sort) {
-        List<Certificate> certificates = certificateDao.getCertificates(name, searchQuery, sort);
+    public List<CertificateDto> getAllCertificates(String tagName, String searchQuery, String sort) {
+        log.debug(String.format("Get all certificates - tagName: %s, searchQuery: %s, sort: %s", tagName, searchQuery, sort));
+        List<Certificate> certificates = certificateDao.getCertificates(tagName, searchQuery, sort);
         certificates.forEach(certificate -> certificate.setTags(tagDao.getTagsFromCertificate(certificate.getId())));
         return certificateDtoMapper.toCertificateDtoList(certificates);
     }
@@ -41,6 +45,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional(readOnly = true)
     public CertificateDto getCertificateById(Long id) {
+        log.debug(String.format("Get certificate with id %d", id));
         Optional<Certificate> optionalCertificate = certificateDao.getCertificateById(id);
         Certificate certificate = optionalCertificate.orElseThrow(() ->
                 new CertificateNotFoundException("Certificate with id " + id + " isn't found"));
@@ -52,6 +57,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional
     public void deleteCertificate(Long id) {
+        log.debug(String.format("Delete certificate with id %d", id));
         getCertificateById(id);
         certificateDao.deleteCertificate(id);
     }
@@ -59,6 +65,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional
     public CertificateDto createCertificate(Certificate certificate) {
+        log.debug(String.format("Create certificate: %s", certificate));
         Certificate createdCertificate = certificateDao.createCertificate(certificate);
         Set<Tag> uniqueTags = new HashSet<>(certificate.getTags());
         Long id = createdCertificate.getId();
@@ -72,6 +79,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     @Transactional
     public CertificateDto updateCertificate(Certificate certificate, Long id) {
+        log.debug(String.format("Create certificate: %s, id: %d", certificate, id));
         Optional<Certificate> optionalCertificate = certificateDao.getCertificateById(id);
         Certificate certificateToUpdate = optionalCertificate.orElseThrow(() ->
                 new CertificateNotFoundException("Certificate with id " + id + " isn't found"));
