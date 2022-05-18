@@ -7,6 +7,8 @@ import com.epam.esm.domain.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
 import com.epam.esm.model.dto.CertificateDto;
 import com.epam.esm.service.mapper.CertificateDtoMapper;
+import com.epam.esm.service.validator.CertificateValidator;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +26,16 @@ public class CertificateServiceImpl implements CertificateService {
     private final CertificateDao certificateDao;
     private final TagDao tagDao;
     private final CertificateDtoMapper certificateDtoMapper;
+    private final CertificateValidator certificateValidator;
     private static Logger log = LogManager.getLogger(CertificateServiceImpl.class);
 
     @Autowired
-    public CertificateServiceImpl(CertificateDao certificateDao, TagDao tagDao, CertificateDtoMapper certificateDtoMapper) {
+    public CertificateServiceImpl(CertificateDao certificateDao, TagDao tagDao, CertificateDtoMapper certificateDtoMapper,
+                                  CertificateValidator certificateValidator) {
         this.certificateDao = certificateDao;
         this.tagDao = tagDao;
         this.certificateDtoMapper = certificateDtoMapper;
+        this.certificateValidator = certificateValidator;
     }
 
     @Override
@@ -66,6 +71,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     public CertificateDto createCertificate(Certificate certificate) {
         log.debug(String.format("Create certificate: %s", certificate));
+        certificateValidator.validateCertificateToCreate(certificate);
         Certificate createdCertificate = certificateDao.createCertificate(certificate);
         Set<Tag> uniqueTags = new HashSet<>(certificate.getTags());
         Long id = createdCertificate.getId();
@@ -80,6 +86,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Transactional
     public CertificateDto updateCertificate(Certificate certificate, Long id) {
         log.debug(String.format("Create certificate: %s, id: %d", certificate, id));
+        certificateValidator.validateCertificateToUpdate(certificate);
         Optional<Certificate> optionalCertificate = certificateDao.getCertificateById(id);
         Certificate certificateToUpdate = optionalCertificate.orElseThrow(() ->
                 new CertificateNotFoundException("Certificate with id " + id + " isn't found"));
@@ -96,12 +103,12 @@ public class CertificateServiceImpl implements CertificateService {
 
     private String composeCertificateName(Certificate certificate, Certificate certificateToUpdate) {
         String nameToUpdate = certificate.getName();
-        return nameToUpdate.isBlank() ? certificateToUpdate.getName() : nameToUpdate;
+        return StringUtils.isBlank(nameToUpdate) ? certificateToUpdate.getName() : nameToUpdate;
     }
 
     private String composeCertificateDescription(Certificate certificate, Certificate certificateToUpdate) {
         String descriptionToUpdate = certificate.getDescription();
-        return descriptionToUpdate.isBlank() ? certificateToUpdate.getDescription() : descriptionToUpdate;
+        return StringUtils.isBlank(descriptionToUpdate) ? certificateToUpdate.getDescription() : descriptionToUpdate;
     }
 
     private Double composeCertificatePrice(Certificate certificate, Certificate certificateToUpdate) {

@@ -4,6 +4,7 @@ import com.epam.esm.domain.Tag;
 import com.epam.esm.model.dto.TagDto;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,12 +31,12 @@ public class TagControllerImpl implements TagController {
 
     @Override
     public ResponseEntity<TagDto> createTag(Tag tag) {
-        return ResponseEntity.ok(tagService.createTag(tag));
+        return new ResponseEntity<>(tagService.createTag(tag), HttpStatus.CREATED);
     }
 
     @Override
     public ResponseEntity<TagDto> deleteTag(Long id) {
         tagService.deleteTag(id);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

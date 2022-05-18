@@ -5,6 +5,7 @@ import com.epam.esm.domain.Tag;
 import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.model.dto.TagDto;
 import com.epam.esm.service.mapper.TagDtoMapper;
+import com.epam.esm.service.validator.TagValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,14 @@ import java.util.Optional;
 public class TagServiceImpl implements TagService {
     private final TagDao tagDao;
     private final TagDtoMapper mapper;
+    private final TagValidator tagValidator;
     private static Logger log = LogManager.getLogger(TagServiceImpl.class);
 
     @Autowired
-    public TagServiceImpl(TagDao tagDao, TagDtoMapper mapper) {
+    public TagServiceImpl(TagDao tagDao, TagDtoMapper mapper, TagValidator tagValidator) {
         this.tagDao = tagDao;
         this.mapper = mapper;
+        this.tagValidator = tagValidator;
     }
 
     public List<TagDto> getAllTags() {
@@ -42,6 +45,7 @@ public class TagServiceImpl implements TagService {
     @Transactional
     public TagDto createTag(Tag tag) {
         log.debug(String.format("Create tag: %s", tag));
+        tagValidator.validateTag(tag);
         return mapper.toTagDto(tagDao.createTag(tag));
     }
 

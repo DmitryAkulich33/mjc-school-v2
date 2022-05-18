@@ -4,6 +4,7 @@ import com.epam.esm.domain.Certificate;
 import com.epam.esm.model.dto.CertificateDto;
 import com.epam.esm.service.CertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,12 +32,12 @@ public class CertificateControllerImpl implements CertificateController {
     @Override
     public ResponseEntity<CertificateDto> deleteCertificate(Long id) {
         certificateService.deleteCertificate(id);
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Override
     public ResponseEntity<CertificateDto> createCertificate(Certificate certificate) {
-        return ResponseEntity.ok(certificateService.createCertificate(certificate));
+        return new ResponseEntity<>(certificateService.createCertificate(certificate), HttpStatus.CREATED);
     }
 
     @Override
