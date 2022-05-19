@@ -1,18 +1,12 @@
 package com.epam.esm.exception;
 
-public class CertificateDaoException extends RuntimeException {
-    public CertificateDaoException() {
-    }
+public class CertificateDaoException extends ArgumentsException {
 
     public CertificateDaoException(String message) {
         super(message);
     }
 
-    public CertificateDaoException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public CertificateDaoException(Throwable cause) {
-        super(cause);
+    public CertificateDaoException(String s, Object... args) {
+        super(s, args);
     }
 }

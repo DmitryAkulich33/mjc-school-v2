@@ -61,13 +61,14 @@ public class CertificateDaoImpl implements CertificateDao {
         try {
             jdbcTemplate.update(DELETE_CERTIFICATE_BY_ID, id);
         } catch (DataAccessException e) {
-            throw new CertificateDaoException("Server problems");
+            throw new CertificateDaoException("server.error");
         }
     }
 
     @Override
     public Certificate createCertificate(Certificate certificate) {
         LocalDateTime creationDate = LocalDateTime.now();
+        Timestamp parsedDate = Timestamp.valueOf(creationDate);
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         try {
@@ -77,22 +78,23 @@ public class CertificateDaoImpl implements CertificateDao {
                 ps.setString(1, certificate.getName());
                 ps.setString(2, certificate.getDescription());
                 ps.setDouble(3, certificate.getPrice());
-                ps.setTimestamp(4, Timestamp.valueOf(creationDate));
-                ps.setTimestamp(5, Timestamp.valueOf(creationDate));
+                ps.setTimestamp(4, parsedDate);
+                ps.setTimestamp(5, parsedDate);
                 ps.setInt(6, STATE);
                 ps.setInt(7, certificate.getDuration());
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new CertificateDuplicateException("Certificate is already exists");
+            throw new CertificateDuplicateException("certificate.exists", certificate.getName());
         } catch (DataAccessException e) {
-            throw new CertificateDaoException("Server problems");
+            throw new CertificateDaoException("server.error");
         }
 
         Long tagId = Objects.requireNonNull(keyHolder.getKey()).longValue();
         certificate.setId(tagId);
         certificate.setState(STATE);
         certificate.setCreationDate(creationDate);
+        certificate.setLastUpdateDate(creationDate);
 
         return certificate;
     }
@@ -108,7 +110,7 @@ public class CertificateDaoImpl implements CertificateDao {
         try {
             jdbcTemplate.update(UPDATE_CERTIFICATE, name, description, price, updateDate, duration, id);
         } catch (DataAccessException e) {
-            throw new CertificateDaoException("Server problems");
+            throw new CertificateDaoException("server.error");
         }
         certificate.setLastUpdateDate(updateDate);
 
@@ -125,7 +127,7 @@ public class CertificateDaoImpl implements CertificateDao {
         try {
             return jdbcTemplate.query(certificateQuery.toString(), rowMapper);
         } catch (DataAccessException e) {
-            throw new CertificateDaoException("Server problems");
+            throw new CertificateDaoException("server.error");
         }
     }
 }

@@ -1,18 +1,12 @@
 package com.epam.esm.exception;
 
-public class TagDuplicateException extends RuntimeException {
-    public TagDuplicateException() {
-    }
+public class TagDuplicateException extends ArgumentsException {
 
     public TagDuplicateException(String message) {
         super(message);
     }
 
-    public TagDuplicateException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public TagDuplicateException(Throwable cause) {
-        super(cause);
+    public TagDuplicateException(String s, Object... args) {
+        super(s, args);
     }
 }

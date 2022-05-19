@@ -1,18 +1,12 @@
 package com.epam.esm.exception;
 
-public class TagDaoException extends RuntimeException {
-    public TagDaoException() {
-    }
+public class TagDaoException extends ArgumentsException {
 
     public TagDaoException(String message) {
         super(message);
     }
 
-    public TagDaoException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public TagDaoException(Throwable cause) {
-        super(cause);
+    public TagDaoException(String s, Object... args) {
+        super(s, args);
     }
 }

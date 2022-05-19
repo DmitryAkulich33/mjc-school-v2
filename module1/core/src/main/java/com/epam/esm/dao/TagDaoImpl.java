@@ -73,9 +73,9 @@ public class TagDaoImpl implements TagDao {
                 return ps;
             }, keyHolder);
         } catch (DuplicateKeyException e) {
-            throw new TagDuplicateException("Tag with this name is already exist");
+            throw new TagDuplicateException("tag.exists", tag.getName());
         } catch (DataAccessException e) {
-            throw new TagDaoException("Server problems");
+            throw new TagDaoException("server.error");
         }
 
         Long idTag = Objects.requireNonNull(keyHolder.getKey()).longValue();
@@ -89,7 +89,7 @@ public class TagDaoImpl implements TagDao {
         try {
             jdbcTemplate.update(DELETE_TAG_BY_ID, id);
         } catch (DataAccessException e) {
-            throw new TagDaoException("Server problems");
+            throw new TagDaoException("server.error");
         }
     }
 
@@ -98,7 +98,7 @@ public class TagDaoImpl implements TagDao {
         try {
             return jdbcTemplate.query(FIND_TAGS_FROM_CERTIFICATE, rowMapper, id);
         } catch (DataAccessException e) {
-            throw new TagDaoException("Server problems");
+            throw new TagDaoException("server.error");
         }
     }
 
@@ -107,7 +107,7 @@ public class TagDaoImpl implements TagDao {
         try {
             jdbcTemplate.update(ADD_TAG_CERTIFICATE, tagId, certificateId);
         } catch (DataAccessException e) {
-            throw new TagDaoException("Server problems");
+            throw new TagDaoException("server.error");
         }
     }
 
@@ -116,7 +116,7 @@ public class TagDaoImpl implements TagDao {
         try {
             jdbcTemplate.update(DELETE_TAG_CERTIFICATE, tagId, certificateId);
         } catch (DataAccessException e) {
-            throw new TagDaoException("Server problems");
+            throw new TagDaoException("server.error");
         }
     }
 }

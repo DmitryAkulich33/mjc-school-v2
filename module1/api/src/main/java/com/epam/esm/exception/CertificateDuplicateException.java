@@ -1,18 +1,12 @@
 package com.epam.esm.exception;
 
-public class CertificateDuplicateException extends RuntimeException {
-    public CertificateDuplicateException() {
-    }
+public class CertificateDuplicateException extends ArgumentsException {
 
     public CertificateDuplicateException(String message) {
         super(message);
     }
 
-    public CertificateDuplicateException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public CertificateDuplicateException(Throwable cause) {
-        super(cause);
+    public CertificateDuplicateException(String s, Object... args) {
+        super(s, args);
     }
 }

@@ -28,14 +28,14 @@ public class TagValidatorImpl implements TagValidator {
             tags.forEach(tag -> validateTagName(tag.getName()));
             return;
         }
-        throw new TagValidatorException("Entered tag name isn't valid");
+        throw new TagValidatorException("tag.not.valid");
     }
 
     @Override
     public void validateTagsToUpdateCertificate(List<Tag> tags) {
         if (tags != null) {
             if (tags.isEmpty()) {
-                throw new TagValidatorException("Entered list of tags is empty");
+                throw new TagValidatorException("tag.list.empty");
             }
             tags.forEach(tag -> validateTagName(tag.getName()));
         }
@@ -45,6 +45,6 @@ public class TagValidatorImpl implements TagValidator {
         if (name != null && validatorHelper.validateStringParameter(TAG_NAME_REGEX, name)) {
             return;
         }
-        throw new TagValidatorException("Entered tag name isn't valid");
+        throw new TagValidatorException("tag.name.not.valid", name);
     }
 }

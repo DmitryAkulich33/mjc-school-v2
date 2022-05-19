@@ -1,18 +1,12 @@
 package com.epam.esm.exception;
 
-public class CertificateNotFoundException extends RuntimeException {
-    public CertificateNotFoundException() {
-    }
+public class CertificateNotFoundException extends ArgumentsException {
 
     public CertificateNotFoundException(String message) {
         super(message);
     }
 
-    public CertificateNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public CertificateNotFoundException(Throwable cause) {
-        super(cause);
+    public CertificateNotFoundException(String s, Object... args) {
+        super(s, args);
     }
 }

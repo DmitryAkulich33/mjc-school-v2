@@ -53,7 +53,7 @@ public class CertificateServiceImpl implements CertificateService {
         log.debug(String.format("Get certificate with id %d", id));
         Optional<Certificate> optionalCertificate = certificateDao.getCertificateById(id);
         Certificate certificate = optionalCertificate.orElseThrow(() ->
-                new CertificateNotFoundException("Certificate with id " + id + " isn't found"));
+                new CertificateNotFoundException("certificate.id.not.found", id));
         certificate.setTags(tagDao.getTagsFromCertificate(id));
 
         return certificateDtoMapper.toCertificateDto(certificate);
@@ -89,7 +89,7 @@ public class CertificateServiceImpl implements CertificateService {
         certificateValidator.validateCertificateToUpdate(certificate);
         Optional<Certificate> optionalCertificate = certificateDao.getCertificateById(id);
         Certificate certificateToUpdate = optionalCertificate.orElseThrow(() ->
-                new CertificateNotFoundException("Certificate with id " + id + " isn't found"));
+                new CertificateNotFoundException("certificate.id.not.found", id));
 
         certificateToUpdate.setName(composeCertificateName(certificate, certificateToUpdate));
         certificateToUpdate.setDescription(composeCertificateDescription(certificate, certificateToUpdate));

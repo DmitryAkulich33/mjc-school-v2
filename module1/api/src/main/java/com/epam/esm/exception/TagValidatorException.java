@@ -1,18 +1,12 @@
 package com.epam.esm.exception;
 
-public class TagValidatorException extends RuntimeException {
-    public TagValidatorException() {
-    }
+public class TagValidatorException extends ArgumentsException {
 
     public TagValidatorException(String message) {
         super(message);
     }
 
-    public TagValidatorException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public TagValidatorException(Throwable cause) {
-        super(cause);
+    public TagValidatorException(String s, Object... args) {
+        super(s, args);
     }
 }

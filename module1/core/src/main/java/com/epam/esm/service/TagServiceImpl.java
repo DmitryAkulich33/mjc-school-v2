@@ -38,7 +38,7 @@ public class TagServiceImpl implements TagService {
     public TagDto getTagById(Long id) {
         log.debug(String.format("Get tag with id: %d", id));
         Optional<Tag> optionalTag = tagDao.getTagById(id);
-        return mapper.toTagDto(optionalTag.orElseThrow(() -> new TagNotFoundException("Tag with id " + id + " isn't found")));
+        return mapper.toTagDto(optionalTag.orElseThrow(() -> new TagNotFoundException("tag.id.not.found", id)));
     }
 
     @Override
