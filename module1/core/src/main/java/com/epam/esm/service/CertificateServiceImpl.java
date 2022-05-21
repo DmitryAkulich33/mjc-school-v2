@@ -72,9 +72,9 @@ public class CertificateServiceImpl implements CertificateService {
     public CertificateDto createCertificate(Certificate certificate) {
         log.debug(String.format("Create certificate: %s", certificate));
         certificateValidator.validateCertificateToCreate(certificate);
-        Certificate createdCertificate = certificateDao.createCertificate(certificate);
+        certificateDao.createCertificate(certificate);
         Set<Tag> uniqueTags = new HashSet<>(certificate.getTags());
-        Long id = createdCertificate.getId();
+        Long id = certificate.getId();
         List<Tag> certificateTags = getOrSaveTags(uniqueTags);
         certificateTags.forEach(elem -> tagDao.createTagCertificate(elem.getId(), id));
         certificate.setTags(certificateTags);

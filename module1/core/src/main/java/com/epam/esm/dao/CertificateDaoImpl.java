@@ -66,7 +66,7 @@ public class CertificateDaoImpl implements CertificateDao {
     }
 
     @Override
-    public Certificate createCertificate(Certificate certificate) {
+    public void createCertificate(Certificate certificate) {
         LocalDateTime creationDate = LocalDateTime.now();
         Timestamp parsedDate = Timestamp.valueOf(creationDate);
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -95,12 +95,10 @@ public class CertificateDaoImpl implements CertificateDao {
         certificate.setState(STATE);
         certificate.setCreationDate(creationDate);
         certificate.setLastUpdateDate(creationDate);
-
-        return certificate;
     }
 
     @Override
-    public Certificate updateCertificate(Certificate certificate) {
+    public void updateCertificate(Certificate certificate) {
         Long id = certificate.getId();
         String name = certificate.getName();
         String description = certificate.getDescription();
@@ -113,8 +111,6 @@ public class CertificateDaoImpl implements CertificateDao {
             throw new CertificateDaoException("server.error");
         }
         certificate.setLastUpdateDate(updateDate);
-
-        return certificate;
     }
 
     @Override

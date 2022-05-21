@@ -11,9 +11,9 @@ public interface CertificateDao {
 
     void deleteCertificate(Long id);
 
-    Certificate createCertificate(Certificate certificate);
+    void createCertificate(Certificate certificate);
 
-    Certificate updateCertificate(Certificate certificate);
+    void updateCertificate(Certificate certificate);
 
     List<Certificate> getCertificates(String name, String search, String sort);
 }
