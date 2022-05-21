@@ -21,8 +21,8 @@ import java.util.Optional;
 
 @Repository
 public class TagDaoImpl implements TagDao {
-    private static final String FIND_ALL_TAGS = "SELECT id, name, state FROM tag";
-    private static final String FIND_TAG_BY_ID = "SELECT id, name, state FROM tag WHERE id=?";
+    private static final String FIND_ALL_TAGS = "SELECT id, name, state FROM tag WHERE state=0";
+    private static final String FIND_TAG_BY_ID = "SELECT id, name, state FROM tag WHERE id=? AND state=0";
     private static final String FIND_TAG_BY_NAME = "SELECT id, name, state FROM tag WHERE name=?";
     private static final String ADD_TAG = "INSERT INTO tag (name) VALUES(?)";
     private static final String DELETE_TAG_BY_ID = "UPDATE tag SET state=1 WHERE id=?";
@@ -41,7 +41,11 @@ public class TagDaoImpl implements TagDao {
     }
 
     public List<Tag> getAllTags() {
-        return jdbcTemplate.query(FIND_ALL_TAGS, rowMapper);
+        try {
+            return jdbcTemplate.query(FIND_ALL_TAGS, rowMapper);
+        } catch (DataAccessException e) {
+            throw new TagDaoException("server.error");
+        }
     }
 
     @Override

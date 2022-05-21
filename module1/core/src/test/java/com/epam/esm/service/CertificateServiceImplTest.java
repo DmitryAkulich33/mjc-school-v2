@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
@@ -46,7 +47,7 @@ class CertificateServiceImplTest {
     private CertificateServiceImpl certificateServiceImpl;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         certificate.setTags(tags);
         certificateDto.setTags(tagsDto);
     }
@@ -92,7 +93,7 @@ class CertificateServiceImplTest {
     }
 
     @Test
-    public void testGetAllCertificates () {
+    public void testGetAllCertificates() {
         when(mockCertificateDao.getCertificates(anyString(), anyString(), anyString())).thenReturn(certificates);
         when(mockCertificateDtoMapper.toCertificateDtoList(certificates)).thenReturn(certificatesDto);
 
