@@ -2,6 +2,7 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.domain.Tag;
+import com.epam.esm.domain.Tag_;
 import com.epam.esm.exception.TagDaoException;
 import org.springframework.stereotype.Repository;
 
@@ -24,8 +25,8 @@ public class TagDaoImpl implements TagDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
         Root<Tag> root = criteriaQuery.from(Tag.class);
-        criteriaQuery.select(root).distinct(true).where(criteriaBuilder.equal(root.get("id"), id),
-                criteriaBuilder.equal(root.get("state"), 0));
+        criteriaQuery.select(root).distinct(true).where(criteriaBuilder.equal(root.get(Tag_.id), id),
+                criteriaBuilder.equal(root.get(Tag_.state), 0));
 
         try {
             return Optional.of(entityManager.createQuery(criteriaQuery).getSingleResult());

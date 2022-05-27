@@ -2,6 +2,7 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.domain.Certificate;
+import com.epam.esm.domain.Certificate_;
 import com.epam.esm.exception.CertificateDaoException;
 import org.springframework.stereotype.Repository;
 
@@ -24,8 +25,8 @@ public class CertificateDaoImpl implements CertificateDao {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Certificate> criteriaQuery = criteriaBuilder.createQuery(Certificate.class);
         Root<Certificate> root = criteriaQuery.from(Certificate.class);
-        criteriaQuery.select(root).distinct(true).where(criteriaBuilder.equal(root.get("id"), id),
-                criteriaBuilder.equal(root.get("state"), 0));
+        criteriaQuery.select(root).distinct(true).where(criteriaBuilder.equal(root.get(Certificate_.id), id),
+                criteriaBuilder.equal(root.get(Certificate_.state), 0));
 
         try {
             return Optional.of(entityManager.createQuery(criteriaQuery).getSingleResult());
