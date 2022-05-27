@@ -4,4 +4,5 @@ import com.epam.esm.domain.Tag;
 
 public interface TagService {
     Tag getTagById(Long id);
+    void deleteTag(Long id);
 }

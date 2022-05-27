@@ -10,10 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -37,5 +34,12 @@ public class TagController {
         TagModel tagModel = TagModel.createForm(tag);
 
         return new ResponseEntity<>(tagModel, HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Tag> deleteTag(@PathVariable @NotNull @Positive Long id) {
+        tagService.deleteTag(id);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

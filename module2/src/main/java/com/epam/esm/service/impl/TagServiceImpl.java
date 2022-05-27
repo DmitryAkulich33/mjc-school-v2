@@ -28,4 +28,11 @@ public class TagServiceImpl implements TagService {
         Optional<Tag> optionalTag = tagDao.getTagById(id);
         return optionalTag.orElseThrow(() -> new TagNotFoundException("tag.id.not.found", id));
     }
+
+    @Override
+    public void deleteTag(Long id) {
+        log.debug(String.format("Removing tag with id:  %d", id));
+        getTagById(id);
+        tagDao.deleteTag(id);
+    }
 }
