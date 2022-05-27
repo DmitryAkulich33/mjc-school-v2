@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface TagDao {
     Optional<Tag> getTagById(Long id);
     void deleteTag(Long id);
+    Tag createTag(Tag tag);
 }

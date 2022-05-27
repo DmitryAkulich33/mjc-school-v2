@@ -4,8 +4,8 @@ import com.epam.esm.dao.TagDao;
 import com.epam.esm.domain.Tag;
 import com.epam.esm.domain.Tag_;
 import com.epam.esm.exception.TagDaoException;
+import com.epam.esm.exception.TagDuplicateException;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -38,7 +38,6 @@ public class TagDaoImpl implements TagDao {
         }
     }
 
-    @Transactional
     @Override
     public void deleteTag(Long id) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -51,5 +50,17 @@ public class TagDaoImpl implements TagDao {
         } catch (IllegalArgumentException | PersistenceException e) {
             throw new TagDaoException("server.error", e);
         }
+    }
+
+    @Override
+    public Tag createTag(Tag tag) {
+        try {
+            entityManager.persist(tag);
+        } catch (IllegalArgumentException e) {
+            throw new TagDaoException("server.error", e);
+        } catch (PersistenceException e) {
+            throw new TagDuplicateException("tag.exists", tag.getName());
+        }
+        return tag;
     }
 }

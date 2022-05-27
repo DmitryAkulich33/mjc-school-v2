@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -29,10 +30,18 @@ public class TagServiceImpl implements TagService {
         return optionalTag.orElseThrow(() -> new TagNotFoundException("tag.id.not.found", id));
     }
 
+    @Transactional
     @Override
     public void deleteTag(Long id) {
         log.debug(String.format("Removing tag with id:  %d", id));
         getTagById(id);
         tagDao.deleteTag(id);
+    }
+
+    @Transactional
+    @Override
+    public Tag createTag(Tag tag) {
+        log.debug(String.format("Creating tag with name:  %s", tag.getName()));
+        return tagDao.createTag(tag);
     }
 }

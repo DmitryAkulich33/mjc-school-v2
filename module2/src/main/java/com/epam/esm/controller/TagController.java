@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.domain.Tag;
+import com.epam.esm.domain.model.CreateTagModel;
 import com.epam.esm.domain.model.TagModel;
 import com.epam.esm.service.TagService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
@@ -41,5 +43,15 @@ public class TagController {
         tagService.deleteTag(id);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @JsonView(TagModel.Views.V1.class)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TagModel> createTag(@Valid @RequestBody @JsonView(CreateTagModel.Views.V1.class) CreateTagModel createTagModel) {
+        Tag tag = CreateTagModel.createForm(createTagModel);
+        Tag createdTag = tagService.createTag(tag);
+        TagModel view = TagModel.createForm(createdTag);
+
+        return new ResponseEntity<>(view, HttpStatus.CREATED);
     }
 }

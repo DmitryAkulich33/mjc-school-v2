@@ -1,5 +1,6 @@
 package com.epam.esm.domain;
 
+import com.epam.esm.dao.audit.AuditTagListener;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString(exclude = "certificates")
 @EqualsAndHashCode(exclude = "certificates")
+@EntityListeners(AuditTagListener.class)
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

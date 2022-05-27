@@ -57,12 +57,12 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         return getResponseEntity(exception, errorCode, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-//    @ExceptionHandler(TagDuplicateException.class)
-//    public ResponseEntity<Object> handleTagDuplicateException(TagDuplicateException exception) {
-//        String errorCode = String.format("%s%s", HttpStatus.BAD_REQUEST.value(), ErrorCode.TAG_DAO_ERROR_CODE.getErrorCode());
-//        return getResponseEntity(exception, errorCode, HttpStatus.BAD_REQUEST);
-//    }
-//
+    @ExceptionHandler(TagDuplicateException.class)
+    public ResponseEntity<Object> handleTagDuplicateException(TagDuplicateException exception) {
+        String errorCode = String.format("%s%s", HttpStatus.BAD_REQUEST.value(), ErrorCode.TAG_DAO_ERROR_CODE.getErrorCode());
+        return getResponseEntity(exception, errorCode, HttpStatus.BAD_REQUEST);
+    }
+
 //    @ExceptionHandler(CertificateDuplicateException.class)
 //    public ResponseEntity<Object> handleCertificateDuplicateException(CertificateDuplicateException exception) {
 //        String errorCode = String.format("%s%s", HttpStatus.BAD_REQUEST.value(), ErrorCode.CERTIFICATE_DAO_ERROR_CODE.getErrorCode());
