@@ -42,7 +42,7 @@ public class CreateTagModel {
         return tag;
     }
 
-    public static List<Tag> createListForm(List<TagModel> tagsModel) {
-        return tagsModel.stream().map(CreateTagModel::createForm).collect(Collectors.toList());
+    public static List<Tag> createListForm(List<TagModel> tagModels) {
+        return tagModels.stream().map(CreateTagModel::createForm).collect(Collectors.toList());
     }
 }

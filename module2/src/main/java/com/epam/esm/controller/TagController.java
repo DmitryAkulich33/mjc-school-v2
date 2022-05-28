@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.util.List;
 
 @Validated
 @RestController
@@ -39,7 +40,7 @@ public class TagController {
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<Tag> deleteTag(@PathVariable @NotNull @Positive Long id) {
+    public ResponseEntity<Tag> deleteTag(@PathVariable("id") @NotNull @Positive Long id) {
         tagService.deleteTag(id);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -53,5 +54,15 @@ public class TagController {
         TagModel view = TagModel.createForm(createdTag);
 
         return new ResponseEntity<>(view, HttpStatus.CREATED);
+    }
+
+    @JsonView(TagModel.Views.V1.class)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<TagModel>> getAllTags(@RequestParam(name = "pageNumber", required = false) @Positive Integer pageNumber,
+                                                     @RequestParam(name = "pageSize", required = false) @Positive Integer pageSize) {
+        List<Tag> tags = tagService.getTags(pageNumber, pageSize);
+        List<TagModel> tagModels = TagModel.createListForm(tags);
+
+        return new ResponseEntity<>(tagModels, HttpStatus.OK);
     }
 }
