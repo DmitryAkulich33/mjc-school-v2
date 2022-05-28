@@ -28,4 +28,11 @@ public class CertificateServiceImpl implements CertificateService {
         Optional<Certificate> optionalCertificate = certificateDao.getCertificateById(id);
         return optionalCertificate.orElseThrow(() -> new CertificateNotFoundException("certificate.id.not.found", id));
     }
+
+    @Override
+    public void deleteCertificate(Long id) {
+        log.debug(String.format("Removing certificate with id %d", id));
+        getCertificateById(id);
+        certificateDao.deleteCertificate(id);
+    }
 }

@@ -11,10 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -39,5 +36,12 @@ public class CertificateController {
         CertificateModel certificateModel = CertificateModel.createForm(certificate);
 
         return new ResponseEntity<>(certificateModel, HttpStatus.OK);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<Certificate> deleteCertificate(@PathVariable("id") @NotNull @Positive Long id) {
+        certificateService.deleteCertificate(id);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
