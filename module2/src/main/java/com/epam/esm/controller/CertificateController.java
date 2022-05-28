@@ -2,6 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.domain.Certificate;
 import com.epam.esm.domain.model.CertificateModel;
+import com.epam.esm.domain.model.CreateCertificateModel;
 import com.epam.esm.service.CertificateService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
@@ -43,5 +45,16 @@ public class CertificateController {
         certificateService.deleteCertificate(id);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @JsonView(CertificateModel.Views.V1.class)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CertificateModel> createCertificate(@Valid @RequestBody @JsonView(CreateCertificateModel.Views.V1.class)
+                                                                     CreateCertificateModel createCertificateView) {
+        Certificate certificate = CreateCertificateModel.createForm(createCertificateView);
+        Certificate createdCertificate = certificateService.createCertificate(certificate);
+        CertificateModel certificateModel = CertificateModel.createForm(createdCertificate);
+
+        return new ResponseEntity<>(certificateModel, HttpStatus.CREATED);
     }
 }

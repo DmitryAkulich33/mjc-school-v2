@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +18,12 @@ public class TagModel {
     @JsonView({Views.V1.class, CertificateModel.Views.V1.class})
     private Long id;
 
-    @JsonView({Views.V1.class, CertificateModel.Views.V1.class})
+    @NotBlank
+    @Pattern(regexp = "^\\S{1,70}$")
+    @JsonView({Views.V1.class,
+            CertificateModel.Views.V1.class,
+            CreateCertificateModel.Views.V1.class,
+            CreateTagModel.Views.class})
     private String name;
 
     public class Views {

@@ -67,7 +67,6 @@ public class TagDaoImpl implements TagDao {
         return tag;
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<Tag> getTags(Integer offset, Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -96,7 +95,22 @@ public class TagDaoImpl implements TagDao {
         try {
             return entityManager.createQuery(criteriaQuery).getResultList();
         } catch (IllegalArgumentException e) {
-            throw new TagDaoException("server.error", e);
+            throw new TagDaoException("server.error");
+        }
+    }
+
+    @Override
+    public Optional<Tag> getTagByName(String name) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
+        Root<Tag> root = criteriaQuery.from(Tag.class);
+        criteriaQuery.select(root).distinct(true).where(criteriaBuilder.equal(root.get(Tag_.name), name));
+        try {
+            return Optional.of(entityManager.createQuery(criteriaQuery).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } catch (IllegalArgumentException | PersistenceException e) {
+            throw new TagDaoException("server.error");
         }
     }
 

@@ -4,6 +4,7 @@ import com.epam.esm.dao.audit.AuditTagListener;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Data
@@ -20,6 +21,7 @@ public class Tag {
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
+    @Pattern(regexp = "^\\S{1,70}$")
     @Column(name = "name", unique = true)
     private String name;
 

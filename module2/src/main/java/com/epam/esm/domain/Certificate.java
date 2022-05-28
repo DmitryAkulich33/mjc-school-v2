@@ -1,5 +1,6 @@
 package com.epam.esm.domain;
 
+import com.epam.esm.dao.audit.AuditCertificateListener;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +16,7 @@ import java.util.List;
 @Entity(name = "certificate")
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditCertificateListener.class)
 public class Certificate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

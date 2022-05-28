@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface CertificateDao {
     Optional<Certificate> getCertificateById(Long id);
     void deleteCertificate(Long id);
+    Certificate createCertificate(Certificate certificate);
 }

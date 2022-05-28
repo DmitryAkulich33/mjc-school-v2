@@ -4,6 +4,7 @@ import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.domain.Certificate;
 import com.epam.esm.domain.Certificate_;
 import com.epam.esm.exception.CertificateDaoException;
+import com.epam.esm.exception.CertificateDuplicateException;
 import com.epam.esm.exception.CertificateNotFoundException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +42,6 @@ public class CertificateDaoImpl implements CertificateDao {
         }
     }
 
-    @Transactional
     @Override
     public void deleteCertificate(Long id) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -55,5 +55,17 @@ public class CertificateDaoImpl implements CertificateDao {
         } catch (IllegalArgumentException | PersistenceException e) {
             throw new CertificateDaoException("server.error");
         }
+    }
+
+    @Override
+    public Certificate createCertificate(Certificate certificate) {
+        try {
+            entityManager.persist(certificate);
+        } catch (IllegalArgumentException e) {
+            throw new CertificateDaoException("server.error");
+        } catch (PersistenceException e) {
+            throw new CertificateDuplicateException("certificate.exists", certificate.getName());
+        }
+        return certificate;
     }
 }

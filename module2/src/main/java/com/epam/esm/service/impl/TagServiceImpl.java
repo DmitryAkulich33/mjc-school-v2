@@ -48,6 +48,7 @@ public class TagServiceImpl implements TagService {
         return tagDao.createTag(tag);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Tag> getTags(Integer pageNumber, Integer pageSize) {
         log.debug(String.format("Getting all tags - pageNumber: %d, pageSize: %d", pageNumber, pageSize));
