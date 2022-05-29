@@ -103,8 +103,6 @@ public class CertificateServiceImpl implements CertificateService {
         if (pageNumber != null && pageSize != null) {
             Integer offset = OffsetCalculator.calculateOffset(pageNumber, pageSize);
             return certificateDao.getCertificates(tagName, searchQuery, sortAsc, sortField, offset, pageSize);
-        } else if (pageNumber == null && pageSize == null) {
-            return certificateDao.getCertificates(tagName, searchQuery, sortAsc, sortField);
         } else {
             throw new PaginationException("pagination.not.valid.data", pageNumber, pageSize);
         }
@@ -116,8 +114,6 @@ public class CertificateServiceImpl implements CertificateService {
         if (pageNumber != null && pageSize != null) {
             Integer offset = OffsetCalculator.calculateOffset(pageNumber, pageSize);
             return certificateDao.getCertificatesByTags(tagNames, offset, pageSize);
-        } else if (pageNumber == null && pageSize == null) {
-            return certificateDao.getCertificatesByTags(tagNames);
         } else {
             throw new PaginationException("pagination.not.valid.data", pageNumber, pageSize);
         }

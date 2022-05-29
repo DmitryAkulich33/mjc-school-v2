@@ -7,7 +7,6 @@ import com.epam.esm.exception.PaginationException;
 import com.epam.esm.exception.TagDaoException;
 import com.epam.esm.exception.TagDuplicateException;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -83,19 +82,6 @@ public class TagDaoImpl implements TagDao {
                     .getResultList();
         } catch (IllegalArgumentException e) {
             throw new TagDaoException("server.error", e);
-        }
-    }
-
-    @Override
-    public List<Tag> getTags() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
-        Root<Tag> root = criteriaQuery.from(Tag.class);
-        criteriaQuery.select(root).where(criteriaBuilder.equal(root.get(Tag_.state), 0));
-        try {
-            return entityManager.createQuery(criteriaQuery).getResultList();
-        } catch (IllegalArgumentException e) {
-            throw new TagDaoException("server.error");
         }
     }
 

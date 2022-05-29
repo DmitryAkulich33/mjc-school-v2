@@ -55,8 +55,6 @@ public class TagServiceImpl implements TagService {
         if (pageNumber != null && pageSize != null) {
             Integer offset = OffsetCalculator.calculateOffset(pageNumber, pageSize);
             return tagDao.getTags(offset, pageSize);
-        } else if (pageNumber == null && pageSize == null) {
-            return tagDao.getTags();
         } else {
             throw new PaginationException("pagination.not.valid.data", pageNumber, pageSize);
         }
