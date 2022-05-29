@@ -5,8 +5,10 @@ import com.epam.esm.dao.TagDao;
 import com.epam.esm.domain.Certificate;
 import com.epam.esm.domain.Tag;
 import com.epam.esm.exception.CertificateNotFoundException;
+import com.epam.esm.exception.PaginationException;
 import com.epam.esm.service.CertificateService;
 import com.epam.esm.service.TagService;
+import com.epam.esm.util.OffsetCalculator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -75,6 +77,39 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateDao.updateCertificate(certificateToUpdate);
     }
 
+    @Transactional
+    @Override
+    public Certificate updateCertificate(Certificate certificate, Long id) {
+        log.debug(String.format("Service: update part certificate with id %d and certificate: %s", id, certificate.toString()));
+        Certificate certificateToUpdate = getCertificateById(id);
+
+        List<Tag> tagsForCertificate = getOrSaveTags(certificate.getTags());
+
+        certificateToUpdate.setName(certificate.getName());
+        certificateToUpdate.setDescription(certificate.getDescription());
+        certificateToUpdate.setDuration(certificate.getDuration());
+        certificateToUpdate.setPrice(certificate.getPrice());
+        certificateToUpdate.setTags(tagsForCertificate);
+
+        return certificateDao.updateCertificate(certificateToUpdate);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Certificate> getCertificates(String tagName, String searchQuery, String sort, Integer pageNumber, Integer pageSize) {
+        log.debug(String.format("Search certificates. tagName: %s, searchQuery: %s, sort: %s", tagName, searchQuery, sort));
+        Boolean sortAsc = isSortAsc(sort);
+        String sortField = getSortField(sort);
+        if (pageNumber != null && pageSize != null) {
+            Integer offset = OffsetCalculator.calculateOffset(pageNumber, pageSize);
+            return certificateDao.getCertificates(tagName, searchQuery, sortAsc, sortField, offset, pageSize);
+        } else if (pageNumber == null && pageSize == null) {
+            return certificateDao.getCertificates(tagName, searchQuery, sortAsc, sortField);
+        } else {
+            throw new PaginationException("pagination.not.valid.data", pageNumber, pageSize);
+        }
+    }
+
     private String composeCertificateName(Certificate certificate, Certificate certificateToUpdate) {
         String nameToUpdate = certificate.getName();
         return StringUtils.isBlank(nameToUpdate) ? certificateToUpdate.getName() : nameToUpdate;
@@ -105,27 +140,28 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateTags;
     }
 
-    @Transactional
-    @Override
-    public Certificate updateCertificate(Certificate certificate, Long id) {
-        log.debug(String.format("Service: update part certificate with id %d and certificate: %s", id, certificate.toString()));
-        Certificate certificateToUpdate = getCertificateById(id);
-
-        List<Tag> tagsForCertificate = getOrSaveTags(certificate.getTags());
-
-        certificateToUpdate.setName(certificate.getName());
-        certificateToUpdate.setDescription(certificate.getDescription());
-        certificateToUpdate.setDuration(certificate.getDuration());
-        certificateToUpdate.setPrice(certificate.getPrice());
-        certificateToUpdate.setTags(tagsForCertificate);
-
-        return certificateDao.updateCertificate(certificateToUpdate);
-    }
-
     private List<Tag> getOrSaveTags(List<Tag> tags) {
         Set<Tag> uniqueTags = new HashSet<>(tags);
         return uniqueTags.stream().
                 map(elem -> tagDao.getTagByName(elem.getName()).orElseGet(() -> tagDao.createTag(elem)))
                 .collect(Collectors.toList());
+    }
+
+    private Boolean isSortAsc(String sort) {
+        return !StringUtils.isBlank(sort) ? getSortType(sort).equals("ASC") : null;
+    }
+
+    private String getSortField(String sort) {
+        if (!StringUtils.isBlank(sort)) {
+            String sortType = getSortType(sort);
+            return sort.trim().replace("_" + sortType.toLowerCase(), StringUtils.EMPTY);
+        } else {
+            return null;
+        }
+    }
+
+    private String getSortType(String sort) {
+        String[] fields = sort.trim().split("_");
+        return fields[fields.length - 1].toUpperCase();
     }
 }

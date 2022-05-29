@@ -3,20 +3,20 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.CertificateDao;
 import com.epam.esm.domain.Certificate;
 import com.epam.esm.domain.Certificate_;
+import com.epam.esm.domain.Tag;
+import com.epam.esm.domain.Tag_;
 import com.epam.esm.exception.CertificateDaoException;
 import com.epam.esm.exception.CertificateDuplicateException;
-import com.epam.esm.exception.CertificateNotFoundException;
+import com.epam.esm.exception.PaginationException;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -36,8 +36,7 @@ public class CertificateDaoImpl implements CertificateDao {
             return Optional.of(entityManager.createQuery(criteriaQuery).getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
-        }
-        catch (IllegalArgumentException | PersistenceException e) {
+        } catch (IllegalArgumentException | PersistenceException e) {
             throw new CertificateDaoException("server.error");
         }
     }
@@ -77,4 +76,103 @@ public class CertificateDaoImpl implements CertificateDao {
             throw new CertificateDaoException("server.error");
         }
     }
+
+    @Override
+    public List<Certificate> getCertificates(String tagName, String searchQuery, Boolean sortAsc, String sortField, Integer offset, Integer pageSize) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        checkPagination(offset, criteriaBuilder);
+        CriteriaQuery<Certificate> criteriaQuery = criteriaBuilder.createQuery(Certificate.class);
+        Root<Certificate> root = criteriaQuery.from(Certificate.class);
+        List<Predicate> conditions = getPredicatesForFilter(tagName, searchQuery, root, criteriaBuilder);
+
+        try {
+            return entityManager.createQuery(getCertificateCriteriaQuery(conditions, criteriaQuery, root, criteriaBuilder, sortField, sortAsc))
+                    .setFirstResult(offset)
+                    .setMaxResults(pageSize)
+                    .getResultList();
+        } catch (IllegalArgumentException | PersistenceException e) {
+            throw new CertificateDaoException("server.error");
+        }
+    }
+
+    @Override
+    public List<Certificate> getCertificates(String tagName, String searchQuery, Boolean sortAsc, String sortField) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Certificate> criteriaQuery = criteriaBuilder.createQuery(Certificate.class);
+        Root<Certificate> root = criteriaQuery.from(Certificate.class);
+        List<Predicate> conditions = getPredicatesForFilter(tagName, searchQuery, root, criteriaBuilder);
+
+        try {
+            return entityManager.createQuery(getCertificateCriteriaQuery(conditions, criteriaQuery, root, criteriaBuilder, sortField, sortAsc))
+                    .getResultList();
+        } catch (IllegalArgumentException | PersistenceException e) {
+            throw new CertificateDaoException("server.error");
+        }
+    }
+
+    private void checkPagination(Integer offset, CriteriaBuilder criteriaBuilder) {
+        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
+        Long count = entityManager.createQuery(countQuery.select(criteriaBuilder.count(countQuery.from(Certificate.class)))).getSingleResult();
+        if (count <= offset) {
+            throw new PaginationException("pagination.more.than.certificates", count);
+        }
+    }
+
+    private List<Predicate> getPredicatesForFilter(String tagName, String searchQuery, Root<Certificate> root, CriteriaBuilder criteriaBuilder) {
+        List<Predicate> conditions = new ArrayList<>();
+        if (tagName != null) {
+            Join<Certificate, Tag> join = root.join(Certificate_.tags, JoinType.INNER);
+            Predicate tagPredicate = criteriaBuilder.equal(join.get(Tag_.name), tagName);
+            conditions.add(tagPredicate);
+        }
+
+        if (searchQuery != null) {
+            Predicate searchCondition = criteriaBuilder.or(criteriaBuilder.like(root.get(Certificate_.description), "%" + searchQuery + "%"),
+                    criteriaBuilder.like(root.get(Certificate_.name), "%" + searchQuery + "%"));
+            conditions.add(searchCondition);
+        }
+
+        Predicate notLock = criteriaBuilder.equal(root.get(Certificate_.state), 0);
+        conditions.add(notLock);
+
+        return conditions;
+    }
+
+    private CriteriaQuery<Certificate> getCertificateCriteriaQuery(List<Predicate> conditions, CriteriaQuery<Certificate> criteriaQuery,
+                                                                   Root<Certificate> root, CriteriaBuilder criteriaBuilder,
+                                                                   String sortField, Boolean sortAsc) {
+        return (sortAsc == null) ? selectWithoutSort(conditions, criteriaQuery, root, criteriaBuilder) :
+                selectSort(conditions, criteriaQuery, root, criteriaBuilder, sortField, sortAsc);
+    }
+
+    private CriteriaQuery<Certificate> selectSort(List<Predicate> conditions, CriteriaQuery<Certificate> criteriaQuery,
+                                                  Root<Certificate> root, CriteriaBuilder criteriaBuilder,
+                                                  String sortField, Boolean sortAsc) {
+        return (sortAsc) ? selectSortAsc(conditions, criteriaQuery, root, criteriaBuilder, sortField) :
+                selectSortDesc(conditions, criteriaQuery, root, criteriaBuilder, sortField);
+    }
+
+    private CriteriaQuery<Certificate> selectSortAsc(List<Predicate> conditions, CriteriaQuery<Certificate> criteriaQuery,
+                                                     Root<Certificate> root, CriteriaBuilder criteriaBuilder, String sortField) {
+        return criteriaQuery.select(root)
+                .distinct(true)
+                .where(criteriaBuilder.and(conditions.toArray(new Predicate[0])))
+                .orderBy(criteriaBuilder.asc(root.get(sortField)));
+    }
+
+    private CriteriaQuery<Certificate> selectSortDesc(List<Predicate> conditions, CriteriaQuery<Certificate> criteriaQuery,
+                                                      Root<Certificate> root, CriteriaBuilder criteriaBuilder, String sortField) {
+        return criteriaQuery.select(root)
+                .distinct(true)
+                .where(criteriaBuilder.and(conditions.toArray(new Predicate[0])))
+                .orderBy(criteriaBuilder.desc(root.get(sortField)));
+    }
+
+    private CriteriaQuery<Certificate> selectWithoutSort(List<Predicate> conditions, CriteriaQuery<Certificate> criteriaQuery,
+                                                         Root<Certificate> root, CriteriaBuilder criteriaBuilder) {
+        return criteriaQuery.select(root)
+                .distinct(true)
+                .where(criteriaBuilder.and(conditions.toArray(new Predicate[0])));
+    }
+
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.util.List;
 
 @Validated
 @RestController
@@ -76,11 +77,24 @@ public class CertificateController {
     @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CertificateModel> updateCertificate(
             @Valid @RequestBody @JsonView(UpdateCertificateModel.Views.V1.class) UpdateCertificateModel updateCertificateModel,
-                                                             @PathVariable @NotNull @Positive Long id) {
+                                                             @PathVariable("id") @NotNull @Positive Long id) {
         Certificate certificateFromQuery = UpdateCertificateModel.createForm(updateCertificateModel);
         Certificate certificateToUpdate = certificateService.updateCertificate(certificateFromQuery, id);
         CertificateModel certificateView = CertificateModel.createForm(certificateToUpdate);
 
         return new ResponseEntity<>(certificateView, HttpStatus.OK);
+    }
+
+    @JsonView(CertificateModel.Views.V1.class)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<CertificateModel>> getCertificates(@RequestParam(name = "tagName", required = false) String tagName,
+                                                                  @RequestParam(name = "searchQuery", required = false) String searchQuery,
+                                                                  @RequestParam(name = "sort", required = false) String sort,
+                                                                  @RequestParam(required = false) @Positive Integer pageNumber,
+                                                                  @RequestParam(required = false) @Positive Integer pageSize) {
+        List<Certificate> certificates = certificateService.getCertificates(tagName, searchQuery, sort, pageNumber, pageSize);
+        List<CertificateModel> certificateModels = CertificateModel.createListForm(certificates);
+
+        return new ResponseEntity<>(certificateModels, HttpStatus.OK);
     }
 }
