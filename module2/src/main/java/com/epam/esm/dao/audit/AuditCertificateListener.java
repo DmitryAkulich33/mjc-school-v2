@@ -7,6 +7,7 @@ import javax.persistence.PreUpdate;
 import java.time.LocalDateTime;
 
 public class AuditCertificateListener {
+
     @PrePersist
     public void createCertificate(Certificate certificate) {
         setCreateDate(certificate);

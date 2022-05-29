@@ -45,6 +45,12 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         return getResponseEntity(exception, errorCode, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException exception) {
+        String errorCode = String.format("%s%s", HttpStatus.NOT_FOUND.value(), ErrorCode.USER_DAO_ERROR_CODE.getErrorCode());
+        return getResponseEntity(exception, errorCode, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(TagDaoException.class)
     public ResponseEntity<Object> handleTagDaoException(TagDaoException exception) {
         String errorCode = String.format("%s%s", HttpStatus.INTERNAL_SERVER_ERROR.value(), ErrorCode.TAG_DAO_ERROR_CODE.getErrorCode());
@@ -54,6 +60,12 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(CertificateDaoException.class)
     public ResponseEntity<Object> handleCertificateDaoException(CertificateDaoException exception) {
         String errorCode = String.format("%s%s", HttpStatus.INTERNAL_SERVER_ERROR.value(), ErrorCode.CERTIFICATE_DAO_ERROR_CODE.getErrorCode());
+        return getResponseEntity(exception, errorCode, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(UserDaoException.class)
+    public ResponseEntity<Object> handleUserDaoException(UserDaoException exception) {
+        String errorCode = String.format("%s%s", HttpStatus.INTERNAL_SERVER_ERROR.value(), ErrorCode.USER_DAO_ERROR_CODE.getErrorCode());
         return getResponseEntity(exception, errorCode, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

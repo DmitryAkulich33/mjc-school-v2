@@ -37,3 +37,32 @@ VALUES
 (7, 5),
 (6, 6),
 (8, 6);
+
+INSERT INTO user
+(name, surname)
+VALUES ("Ivan", "Ivanov"),
+       ("Petr", "Petrov"),
+       ("Denis", "Denisov");
+
+INSERT INTO `orders`
+(purchase_date, total, id_user)
+VALUES ("2020-11-01T10:00:09", 525.00, 1),
+       ("2020-11-02T11:00:10", 290.00, 2),
+       ("2020-11-02T12:00:12", 825.00, 3),
+       ("2020-11-03T12:00:12", 100.00, 1),
+       ("2020-11-03T13:00:15", 80.00, 2),
+       ("2020-11-03T13:00:16", 500.00, 3);
+
+INSERT INTO certificate_order
+(order_id, certificate_id)
+VALUES (1, 1),
+       (1, 2),
+       (2, 3),
+       (2, 4),
+       (2, 5),
+       (3, 6),
+       (3, 1),
+       (3, 2),
+       (4, 3),
+       (5, 4),
+       (6, 1);

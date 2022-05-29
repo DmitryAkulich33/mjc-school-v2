@@ -18,7 +18,7 @@ import java.util.List;
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", updatable = false, nullable = false)
+    @Column(name = "id_tag", updatable = false, nullable = false)
     private Long id;
 
     @Pattern(regexp = "^\\S{1,70}$")
