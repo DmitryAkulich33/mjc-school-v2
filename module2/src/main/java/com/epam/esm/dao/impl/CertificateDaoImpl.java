@@ -110,6 +110,58 @@ public class CertificateDaoImpl implements CertificateDao {
         }
     }
 
+    @Override
+    public List<Certificate> getCertificatesByTags(List<String> tagNames, Integer offset, Integer pageSize) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Certificate> criteriaQuery = criteriaBuilder.createQuery(Certificate.class);
+        Root<Certificate> root = criteriaQuery.from(Certificate.class);
+
+        List<Predicate> conditions = getPredicatesForSearchByTags(tagNames, root, criteriaBuilder);
+
+        criteriaQuery.select(root).distinct(true).where(criteriaBuilder.and(conditions.toArray(new Predicate[0])),
+                criteriaBuilder.equal(root.get(Certificate_.state), 0));
+
+        try {
+            return entityManager.createQuery(criteriaQuery)
+                    .setFirstResult(offset)
+                    .setMaxResults(pageSize)
+                    .getResultList();
+        } catch (IllegalArgumentException | PersistenceException e) {
+            throw new CertificateDaoException("server.error");
+        }
+    }
+
+    @Override
+    public List<Certificate> getCertificatesByTags(List<String> tagNames) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Certificate> criteriaQuery = criteriaBuilder.createQuery(Certificate.class);
+        Root<Certificate> root = criteriaQuery.from(Certificate.class);
+
+        List<Predicate> conditions = getPredicatesForSearchByTags(tagNames, root, criteriaBuilder);
+
+        criteriaQuery.select(root).distinct(true).where(criteriaBuilder.and(conditions.toArray(new Predicate[0])),
+                criteriaBuilder.equal(root.get(Certificate_.state), 0));
+
+        try {
+            return entityManager.createQuery(criteriaQuery)
+                    .getResultList();
+        } catch (IllegalArgumentException | PersistenceException e) {
+            throw new CertificateDaoException("message.wrong_data", e);
+        }
+    }
+
+    private List<Predicate> getPredicatesForSearchByTags(List<String> tagNames, Root<Certificate> root, CriteriaBuilder criteriaBuilder) {
+        List<Predicate> conditions = new ArrayList<>();
+        if (tagNames != null && !tagNames.isEmpty()) {
+            for (String tagName : tagNames) {
+                Join<Certificate, Tag> join = root.join(Certificate_.tags, JoinType.INNER);
+                conditions.add(criteriaBuilder.equal(join.get(Tag_.name), tagName));
+            }
+        }
+        return conditions;
+    }
+
+
     private void checkPagination(Integer offset, CriteriaBuilder criteriaBuilder) {
         CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
         Long count = entityManager.createQuery(countQuery.select(criteriaBuilder.count(countQuery.from(Certificate.class)))).getSingleResult();

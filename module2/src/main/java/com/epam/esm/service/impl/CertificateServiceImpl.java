@@ -110,6 +110,19 @@ public class CertificateServiceImpl implements CertificateService {
         }
     }
 
+    @Override
+    public List<Certificate> getCertificatesByTags(List<String> tagNames, Integer pageNumber, Integer pageSize) {
+        log.debug("Search certificates by tag names.");
+        if (pageNumber != null && pageSize != null) {
+            Integer offset = OffsetCalculator.calculateOffset(pageNumber, pageSize);
+            return certificateDao.getCertificatesByTags(tagNames, offset, pageSize);
+        } else if (pageNumber == null && pageSize == null) {
+            return certificateDao.getCertificatesByTags(tagNames);
+        } else {
+            throw new PaginationException("pagination.not.valid.data", pageNumber, pageSize);
+        }
+    }
+
     private String composeCertificateName(Certificate certificate, Certificate certificateToUpdate) {
         String nameToUpdate = certificate.getName();
         return StringUtils.isBlank(nameToUpdate) ? certificateToUpdate.getName() : nameToUpdate;

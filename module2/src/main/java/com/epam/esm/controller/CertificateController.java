@@ -17,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.util.List;
@@ -93,6 +94,18 @@ public class CertificateController {
                                                                   @RequestParam(required = false) @Positive Integer pageNumber,
                                                                   @RequestParam(required = false) @Positive Integer pageSize) {
         List<Certificate> certificates = certificateService.getCertificates(tagName, searchQuery, sort, pageNumber, pageSize);
+        List<CertificateModel> certificateModels = CertificateModel.createListForm(certificates);
+
+        return new ResponseEntity<>(certificateModels, HttpStatus.OK);
+    }
+
+    @JsonView(CertificateModel.Views.V1.class)
+    @GetMapping(path = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<CertificateModel>> getCertificatesByTags(
+            @RequestParam(name = "names") @NotNull @NotEmpty List<String> names,
+            @RequestParam(name = "pageNumber", required = false) @Positive Integer pageNumber,
+            @RequestParam(name = "pageSize", required = false) @Positive Integer pageSize) {
+        List<Certificate> certificates = certificateService.getCertificatesByTags(names, pageNumber, pageSize);
         List<CertificateModel> certificateModels = CertificateModel.createListForm(certificates);
 
         return new ResponseEntity<>(certificateModels, HttpStatus.OK);
