@@ -68,4 +68,13 @@ public class CertificateDaoImpl implements CertificateDao {
         }
         return certificate;
     }
+
+    @Override
+    public Certificate updateCertificate(Certificate certificate) {
+        try {
+            return entityManager.merge(certificate);
+        } catch (IllegalArgumentException | PersistenceException e) {
+            throw new CertificateDaoException("server.error");
+        }
+    }
 }

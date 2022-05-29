@@ -37,9 +37,9 @@ public class CreateTagModel {
     }
 
     public static Tag createForm(TagModel tagModel) {
-        Tag tag = new Tag();
-        tag.setName(tagModel.getName());
-        return tag;
+        return Tag.builder()
+                .name(tagModel.getName())
+                .build();
     }
 
     public static List<Tag> createListForm(List<TagModel> tagModels) {

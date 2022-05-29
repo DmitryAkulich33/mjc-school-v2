@@ -4,6 +4,7 @@ import com.epam.esm.domain.Certificate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class CertificateModel {
     @JsonView({Views.V1.class})
     private Long id;
@@ -47,17 +49,16 @@ public class CertificateModel {
     }
 
     public static CertificateModel createForm(Certificate certificate) {
-        CertificateModel certificateView = new CertificateModel();
-        certificateView.setId(certificate.getId());
-        certificateView.setName(certificate.getName());
-        certificateView.setDescription(certificate.getDescription());
-        certificateView.setPrice(certificate.getPrice());
-        certificateView.setCreateDate(certificate.getCreationDate());
-        certificateView.setLastUpdateDate(certificate.getLastUpdateDate());
-        certificateView.setDuration(certificate.getDuration());
-        certificateView.setTags(TagModel.createListForm(certificate.getTags()));
-
-        return certificateView;
+        return CertificateModel.builder()
+                .id(certificate.getId())
+                .name(certificate.getName())
+                .description(certificate.getDescription())
+                .price(certificate.getPrice())
+                .createDate(certificate.getCreationDate())
+                .lastUpdateDate(certificate.getLastUpdateDate())
+                .duration(certificate.getDuration())
+                .tags(TagModel.createListForm(certificate.getTags()))
+                .build();
     }
 
     public static List<CertificateModel> createListForm(List<Certificate> certificates) {

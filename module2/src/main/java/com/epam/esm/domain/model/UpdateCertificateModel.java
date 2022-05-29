@@ -4,6 +4,7 @@ import com.epam.esm.domain.Certificate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,22 +15,23 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateCertificateModel {
+@Builder
+public class UpdateCertificateModel {
+    @Null
     @JsonView(Views.V1.class)
     private Long id;
 
-    @NotBlank()
+    @NotBlank
     @Pattern(regexp = "^([A-Z].{0,99})$")
     @JsonView(Views.V1.class)
     private String name;
 
-    @NotBlank()
+    @NotBlank
     @Pattern(regexp = "^([A-Z].{0,299})$")
     @JsonView(Views.V1.class)
     private String description;
 
     @NotNull
-    @Positive
     @JsonView(Views.V1.class)
     private Double price;
 
@@ -56,16 +58,17 @@ public class CreateCertificateModel {
         }
     }
 
-    public static Certificate createForm(CreateCertificateModel createCertificateModel) {
+    public static Certificate createForm(UpdateCertificateModel updateCertificateModel) {
+        List<TagModel> tagModels = updateCertificateModel.getTags();
         return Certificate.builder()
-                .id(createCertificateModel.getId())
-                .name(createCertificateModel.getName())
-                .description(createCertificateModel.getDescription())
-                .price(createCertificateModel.getPrice())
-                .creationDate(createCertificateModel.getCreateDate())
-                .lastUpdateDate(createCertificateModel.getLastUpdateDate())
-                .duration(createCertificateModel.getDuration())
-                .tags(CreateTagModel.createListForm(createCertificateModel.getTags()))
+                .id(updateCertificateModel.getId())
+                .name(updateCertificateModel.getName())
+                .description(updateCertificateModel.getDescription())
+                .price(updateCertificateModel.getPrice())
+                .creationDate(updateCertificateModel.getCreateDate())
+                .lastUpdateDate(updateCertificateModel.getLastUpdateDate())
+                .duration(updateCertificateModel.getDuration())
+                .tags(tagModels != null ? CreateTagModel.createListForm(tagModels) : null)
                 .build();
     }
 }

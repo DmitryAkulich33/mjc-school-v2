@@ -3,6 +3,8 @@ package com.epam.esm.controller;
 import com.epam.esm.domain.Certificate;
 import com.epam.esm.domain.model.CertificateModel;
 import com.epam.esm.domain.model.CreateCertificateModel;
+import com.epam.esm.domain.model.UpdateCertificateModel;
+import com.epam.esm.domain.model.UpdatePartCertificateModel;
 import com.epam.esm.service.CertificateService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.logging.log4j.LogManager;
@@ -56,5 +58,29 @@ public class CertificateController {
         CertificateModel certificateModel = CertificateModel.createForm(createdCertificate);
 
         return new ResponseEntity<>(certificateModel, HttpStatus.CREATED);
+    }
+
+    @JsonView(CertificateModel.Views.V1.class)
+    @PatchMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CertificateModel> updatePartCertificate(
+            @Valid @RequestBody @JsonView(UpdatePartCertificateModel.Views.V1.class) UpdatePartCertificateModel updatePartCertificateModel,
+            @PathVariable @NotNull @Positive Long id) {
+        Certificate certificateFromQuery = UpdatePartCertificateModel.createForm(updatePartCertificateModel);
+        Certificate certificateToUpdate = certificateService.updatePartCertificate(certificateFromQuery, id);
+        CertificateModel certificateView = CertificateModel.createForm(certificateToUpdate);
+
+        return new ResponseEntity<>(certificateView, HttpStatus.OK);
+    }
+
+    @JsonView(CertificateModel.Views.V1.class)
+    @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CertificateModel> updateCertificate(
+            @Valid @RequestBody @JsonView(UpdateCertificateModel.Views.V1.class) UpdateCertificateModel updateCertificateModel,
+                                                             @PathVariable @NotNull @Positive Long id) {
+        Certificate certificateFromQuery = UpdateCertificateModel.createForm(updateCertificateModel);
+        Certificate certificateToUpdate = certificateService.updateCertificate(certificateFromQuery, id);
+        CertificateModel certificateView = CertificateModel.createForm(certificateToUpdate);
+
+        return new ResponseEntity<>(certificateView, HttpStatus.OK);
     }
 }
