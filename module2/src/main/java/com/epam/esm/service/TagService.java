@@ -9,4 +9,5 @@ public interface TagService {
     void deleteTag(Long id);
     Tag createTag(Tag tag);
     List<Tag> getTags(Integer pageNumber, Integer pageSize);
+    Tag getTheMostUsedTag();
 }

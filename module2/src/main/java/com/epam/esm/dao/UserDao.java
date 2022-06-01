@@ -10,7 +10,5 @@ public interface UserDao {
 
     List<User> getUsers(Integer offset, Integer pageSize);
 
-    List<User> createUsers(List<User> users);
-
     User getUserWithTheLargeSumOrders();
 }

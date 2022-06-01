@@ -7,6 +7,7 @@ import com.epam.esm.service.TagService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class TagController {
     private final TagService tagService;
     private static Logger log = LogManager.getLogger(TagController.class);
 
+    @Autowired
     public TagController(TagService tagService) {
         this.tagService = tagService;
     }
@@ -64,5 +66,14 @@ public class TagController {
         List<TagModel> tagModels = TagModel.createListForm(tags);
 
         return new ResponseEntity<>(tagModels, HttpStatus.OK);
+    }
+
+    @JsonView(TagModel.Views.V1.class)
+    @GetMapping(path = "/tag", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TagModel> getTheMostUsedTag() {
+        Tag tag = tagService.getTheMostUsedTag();
+        TagModel tagModel = TagModel.createForm(tag);
+
+        return new ResponseEntity<>(tagModel, HttpStatus.OK);
     }
 }

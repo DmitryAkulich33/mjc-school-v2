@@ -15,13 +15,13 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 public class UserModel {
-    @JsonView({Views.V1.class})
+    @JsonView({Views.V1.class, OrderModel.Views.V1.class})
     private Long id;
 
-    @JsonView({Views.V1.class})
+    @JsonView({Views.V1.class, OrderModel.Views.V1.class})
     private String name;
 
-    @JsonView({Views.V1.class})
+    @JsonView({Views.V1.class, OrderModel.Views.V1.class})
     private String surname;
 
     public class Views {

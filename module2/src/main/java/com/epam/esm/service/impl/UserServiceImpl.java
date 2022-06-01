@@ -8,6 +8,7 @@ import com.epam.esm.service.UserService;
 import com.epam.esm.util.OffsetCalculator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ public class UserServiceImpl implements UserService {
 
     private static Logger log = LogManager.getLogger(UserServiceImpl.class);
 
+    @Autowired
     public UserServiceImpl(UserDao userDao) {
         this.userDao = userDao;
     }
@@ -43,9 +45,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional
     @Override
-    public List<User> createUsers(List<User> users) {
-        return null;
+    public User getUserWithTheLargeSumOrders() {
+        return userDao.getUserWithTheLargeSumOrders();
     }
 }

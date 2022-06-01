@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 public class TagModel {
-    @JsonView({Views.V1.class, CertificateModel.Views.V1.class})
+    @JsonView({Views.V1.class, CertificateModel.Views.V1.class, OrderModel.Views.V1.class})
     private Long id;
 
     @NotBlank
@@ -27,7 +27,8 @@ public class TagModel {
             CreateCertificateModel.Views.V1.class,
             CreateTagModel.Views.V1.class,
             UpdateCertificateModel.Views.V1.class,
-            UpdatePartCertificateModel.Views.V1.class})
+            UpdatePartCertificateModel.Views.V1.class,
+            OrderModel.Views.V1.class})
     private String name;
 
     public class Views {

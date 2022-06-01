@@ -13,7 +13,7 @@ import java.util.List;
 
 @Data
 @Builder
-@Entity(name = "order")
+@Entity(name = "orders")
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditOrderListener.class)

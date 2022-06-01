@@ -17,30 +17,30 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 public class CertificateModel {
-    @JsonView({Views.V1.class})
+    @JsonView({Views.V1.class, OrderModel.Views.V1.class})
     private Long id;
 
-    @JsonView({Views.V1.class})
+    @JsonView({Views.V1.class, OrderModel.Views.V1.class})
     private String name;
 
-    @JsonView({Views.V1.class})
+    @JsonView({Views.V1.class, OrderModel.Views.V1.class})
     private String description;
 
-    @JsonView({Views.V1.class})
+    @JsonView({Views.V1.class, OrderModel.Views.V1.class})
     private Double price;
 
-    @JsonView({Views.V1.class})
+    @JsonView({Views.V1.class, OrderModel.Views.V1.class})
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createDate;
 
-    @JsonView({Views.V1.class})
+    @JsonView({Views.V1.class, OrderModel.Views.V1.class})
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastUpdateDate;
 
-    @JsonView({Views.V1.class})
+    @JsonView({Views.V1.class, OrderModel.Views.V1.class})
     private Integer duration;
 
-    @JsonView({Views.V1.class})
+    @JsonView({Views.V1.class, OrderModel.Views.V1.class})
     private List<TagModel> tags;
 
     public class Views {
